@@ -1,5 +1,10 @@
 package example.akka;
 
+import static example.akka.Messages.Request;
+import static example.akka.Messages.Response;
+import static example.akka.Messages.BackendRegistration;
+
+import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
 import akka.cluster.Cluster;
@@ -27,33 +32,42 @@ public class BackendActor extends UntypedActor {
 
   @Override
   public void onReceive(Object message) {
-    if (message instanceof Messages.Request) {
-      Messages.Request request = (Messages.Request) message;
-      getSender().tell(new Messages.Response(getSelf(),request.getData()),
-                       getSelf());
+    if (message instanceof Request) {
+      Request request = (Request) message;
+      handleRequest(getSender(), request);
 
     } else if (message instanceof CurrentClusterState) {
       CurrentClusterState state = (CurrentClusterState) message;
-      for (Member member : state.getMembers()) {
-        if (member.status().equals(MemberStatus.up())) {
-          registerTo(member);
-        }
-      }
+      registerTo(state.getMembers());
 
     } else if (message instanceof MemberUp) {
       MemberUp mUp = (MemberUp) message;
       registerTo(mUp.member());
 
-    } else
+    } else {
       unhandled(message);
+    }
   }
 
+  private void registerTo(Iterable<Member> members) {
+    for (Member member : members) {
+      if (member.status().equals(MemberStatus.up())) {
+        registerTo(member);
+      }
+    }
+  }
 
   private void registerTo(Member member) {
     if (member.hasRole("frontend")) {
       String name = member.address() + "/user/frontend";
       ActorSelection frontend = getContext().actorSelection(name);
-      frontend.tell(new Messages.BackendRegistration(), getSelf());
+      frontend.tell(new BackendRegistration(), getSelf());
     }
   }
+
+  private void handleRequest(ActorRef frontend, Request request) {
+    Response response = new Response(getSelf(),request.getData());
+    frontend.tell(response, getSelf());
+  }
+
 }
