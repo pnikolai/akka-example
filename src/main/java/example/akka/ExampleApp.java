@@ -38,9 +38,11 @@ public class ExampleApp implements Bootable {
   }
 
   private void startFrontendNode() {
+    system.actorOf(Props.create(FrontendActor.class), "frontend");
   }
 
   private void startBackendNode() {
+    system.actorOf(Props.create(BackendActor.class));
   }
 
 }
