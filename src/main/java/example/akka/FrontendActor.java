@@ -1,5 +1,9 @@
 package example.akka;
 
+import static example.akka.Messages.Request;
+import static example.akka.Messages.Failure;
+import static example.akka.Messages.BackendRegistration;
+
 import akka.actor.ActorRef;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
@@ -18,31 +22,45 @@ public class FrontendActor extends UntypedActor {
 
   @Override
   public void onReceive(Object message) {
-    if ((message instanceof Messages.Request) && backends.isEmpty()) {
-      Messages.Request request = (Messages.Request) message;
-      getSender().tell(
-          new Messages.Failure("Service unavailable", request),
-          getSender());
+    if ((message instanceof Request) && backends.isEmpty()) {
+      Request request = (Request) message;
+      rejectRequest(getSender(), request);
 
-    } else if (message instanceof Messages.Request) {
-      Messages.Request request = (Messages.Request) message;
-      counter++;
-      backends.get(counter % backends.size()).forward(request, getContext());
+    } else if (message instanceof Request) {
+      Request request = (Request) message;
+      handleRequest(request);
 
-    } else if (message instanceof Messages.BackendRegistration) {
-      ActorRef backend = getSender();
-      getContext().watch(backend);
-      backends.add(backend);
-      log.info("Registered {} backend", backend.path());
+    } else if (message instanceof BackendRegistration) {
+      registerBackend(getSender());
 
     } else if (message instanceof Terminated) {
       Terminated terminated = (Terminated) message;
-      ActorRef backend = terminated.getActor();
-      backends.remove(backend);
-      log.info("Unregistered {} backend", backend.path());
+      unregisterBackend(terminated.getActor());
 
     } else {
       unhandled(message);
     }
   }
+  
+  private void rejectRequest(ActorRef sender, Request request) {
+    Failure failure = new Failure("Service unavailable", request);
+    sender.tell(failure, getSelf());
+  }
+
+  private void handleRequest(Request request) {
+    counter++;
+    backends.get(counter % backends.size()).forward(request, getContext());
+  }
+
+  private void registerBackend(ActorRef backend) {
+    getContext().watch(backend);
+    backends.add(backend);
+    log.info("Registered {} backend", backend.path());
+  }
+
+  private void unregisterBackend(ActorRef backend) {
+    backends.remove(backend);
+    log.info("Unregistered {} backend", backend.path());
+  }
+
 }
