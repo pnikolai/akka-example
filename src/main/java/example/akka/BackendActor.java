@@ -27,7 +27,12 @@ public class BackendActor extends UntypedActor {
 
   @Override
   public void onReceive(Object message) {
-    if (message instanceof CurrentClusterState) {
+    if (message instanceof Messages.Request) {
+      Messages.Request request = (Messages.Request) message;
+      getSender().tell(new Messages.Response(getSelf(),request.getData()),
+                       getSelf());
+
+    } else if (message instanceof CurrentClusterState) {
       CurrentClusterState state = (CurrentClusterState) message;
       for (Member member : state.getMembers()) {
         if (member.status().equals(MemberStatus.up())) {

@@ -1,12 +1,19 @@
 package example.akka;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.kernel.Bootable;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.Config;
 
+import scala.concurrent.ExecutionContext;
+import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
+
+import java.util.concurrent.TimeUnit;
 import java.util.List;
+
 
 public class ExampleApp implements Bootable {
   final Config config = ConfigFactory.load("example");
@@ -22,7 +29,8 @@ public class ExampleApp implements Bootable {
       startSeedNode();
 
     } else if (roles.contains("frontend")) {
-      startFrontendNode();
+      ActorRef frontend = startFrontendNode();
+      simulateWork(frontend);
 
     } else if (roles.contains("backend")) {
       startBackendNode();
@@ -33,16 +41,24 @@ public class ExampleApp implements Bootable {
     system.shutdown();
   }
   
-  private void startSeedNode() {
-    system.actorOf(Props.create(SeedActor.class));
+  private ActorRef startSeedNode() {
+    return system.actorOf(Props.create(SeedActor.class));
   }
 
-  private void startFrontendNode() {
-    system.actorOf(Props.create(FrontendActor.class), "frontend");
+  private ActorRef startFrontendNode() {
+    return system.actorOf(Props.create(FrontendActor.class), "frontend");
   }
 
-  private void startBackendNode() {
-    system.actorOf(Props.create(BackendActor.class));
+  private ActorRef startBackendNode() {
+    return system.actorOf(Props.create(BackendActor.class));
+  }
+
+  private void simulateWork(ActorRef frontend) {
+    ExecutionContext ec = system.dispatcher();
+    FiniteDuration interval = Duration.create(2, TimeUnit.SECONDS);
+
+    system.scheduler()
+      .schedule(interval, interval, new WorkSimulator(frontend, ec), ec);
   }
 
 }
