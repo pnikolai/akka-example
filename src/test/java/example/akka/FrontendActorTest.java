@@ -16,8 +16,6 @@ import akka.actor.Props;
 import akka.testkit.TestActorRef;
 import akka.testkit.JavaTestKit;
 
-import scala.concurrent.duration.Duration;
-
 
 public class FrontendActorTest {
   static ActorSystem system;
@@ -29,8 +27,7 @@ public class FrontendActorTest {
 
   @AfterClass
   public static void teardownSystem() {
-    system.shutdown();
-    system.awaitTermination(Duration.create("10 seconds"));
+    JavaTestKit.shutdownActorSystem(system);
   }
 
   TestActorRef<FrontendActor> frontend;
