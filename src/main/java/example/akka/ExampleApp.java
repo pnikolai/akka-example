@@ -22,6 +22,7 @@ public class ExampleApp implements Bootable {
   /**
     Create top-level actors depending on node role.
    */
+  @Override
   public void startup() {
     List<String> roles = config.getStringList("akka.cluster.roles");
 
@@ -37,6 +38,7 @@ public class ExampleApp implements Bootable {
     }
   }
 
+  @Override
   public void shutdown() {
     system.shutdown();
   }
@@ -49,8 +51,9 @@ public class ExampleApp implements Bootable {
     return system.actorOf(Props.create(FrontendActor.class), "frontend");
   }
 
-  private ActorRef startBackendNode() {
-    return system.actorOf(Props.create(BackendActor.class));
+  private void startBackendNode() {
+    ActorRef backend = system.actorOf(Props.create(BackendActor.class));
+    system.actorOf(Props.create(FrontendFinder.class, backend));
   }
 
   private void simulateWork(ActorRef frontend) {
