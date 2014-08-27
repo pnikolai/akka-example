@@ -75,14 +75,14 @@ public interface Messages {
       return "BackendRegistration";
     }
   }
-  
+
   public static class FrontendAvailable implements Serializable {
     private final ActorRef frontend;
-    
+
     public FrontendAvailable(ActorRef frontend) {
       this.frontend = frontend;
     }
-    
+
     public ActorRef getFrontend() {
       return frontend;
     }
@@ -90,6 +90,23 @@ public interface Messages {
     @Override
     public String toString() {
      return String.format("FrontendAvailable: %s", frontend) ;
-    }       
+    }
+  }
+
+  public static class RemoteMessage implements Serializable {
+    private String message;
+
+    public RemoteMessage(String message) {
+      this.message = message;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    @Override
+    public String toString() {
+     return String.format("RemoteMessage: %s", message) ;
+    }
   }
 }
