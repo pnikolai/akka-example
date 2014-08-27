@@ -90,7 +90,7 @@
             <additionalClasspathElement>${basedir}/config</additionalClasspathElement>
           </additionalClasspathElements>
           <arguments>
-            <argument>example.akka.ExampleApp</argument>
+            <argument>example.akka.${akka.app}</argument>
           </arguments>
 
           <systemProperties>
@@ -106,7 +106,6 @@
               <key>akka.cluster.roles.0</key>
               <value>${akka.cluster.role}</value>
             </systemProperty>
-
           </systemProperties>
         </configuration>
       </plugin>
@@ -134,6 +133,7 @@
           <scmBranch>gh-pages</scmBranch>
         </configuration>
       </plugin>
+
     </plugins>
 
   </build>
@@ -170,7 +170,7 @@
           <reportSet>
             <id>unit-tests</id>
             <reports>
-              <report>report</report> 
+              <report>report</report>
             </reports>
           </reportSet>
           <reportSet>
@@ -196,26 +196,32 @@
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-testkit_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.5</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-kernel_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.5</version>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-cluster_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.5</version>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-slf4j_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-remote_2.11</artifactId>
+      <version>2.3.5</version>
     </dependency>
 
     <dependency>
@@ -230,6 +236,7 @@
     <profile>
       <id>seed1</id>
       <properties>
+        <akka.app>ExampleApp</akka.app>
         <akka.cluster.port>2551</akka.cluster.port>
         <akka.cluster.role>seed</akka.cluster.role>
       </properties>
@@ -238,6 +245,7 @@
     <profile>
       <id>seed2</id>
       <properties>
+        <akka.app>ExampleApp</akka.app>
         <akka.cluster.port>2552</akka.cluster.port>
         <akka.cluster.role>seed</akka.cluster.role>
       </properties>
@@ -246,6 +254,7 @@
     <profile>
       <id>frontend</id>
       <properties>
+        <akka.app>ExampleApp</akka.app>
         <akka.cluster.port>0</akka.cluster.port>
         <akka.cluster.role>frontend</akka.cluster.role>
       </properties>
@@ -254,8 +263,17 @@
     <profile>
       <id>backend</id>
       <properties>
+        <akka.app>ExampleApp</akka.app>
         <akka.cluster.port>0</akka.cluster.port>
         <akka.cluster.role>backend</akka.cluster.role>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>remote</id>
+      <properties>
+        <akka.app>RemoteApp</akka.app>
+        <akka.cluster.port>12345</akka.cluster.port>
       </properties>
     </profile>
 
