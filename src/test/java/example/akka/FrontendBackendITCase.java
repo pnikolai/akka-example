@@ -30,31 +30,31 @@ import scala.concurrent.duration.Duration;
  * @author npetrov
  */
 public class FrontendBackendITCase {
-  
+
   ActorSystem system;
   ActorRef frontend;
   ActorRef backend;
   JavaTestKit testKit;
-  
+
   @Before
   public void setup() {
     system = ActorSystem.create();
     testKit = new JavaTestKit(system);
     frontend = system.actorOf(Props.create(FrontendActor.class));
-    backend = system.actorOf(Props.create(BackendActor.class));
+    backend = system.actorOf(BackendActor.props("test"));
   }
-  
+
   @After
   public void cleanup() {
     testKit.shutdownActorSystem(system, true);
   }
-  
+
   @Test
   public void testBackendRegistration() {
     frontend.tell(new Request("Test Request"), testKit.getTestActor());
     Failure fail = testKit.expectMsgClass(Failure.class);
     assertEquals(fail.getRequest().getData(), "Test Request");
-    
+
     backend.tell(new FrontendAvailable(frontend), testKit.getRef());
     backend.tell(new Identify(this), testKit.getRef());
     testKit.expectMsgClass(duration("1 second"), ActorIdentity.class);

@@ -28,23 +28,23 @@ public class BackendActorTest {
   public static void teardownSystem() {
     JavaTestKit.shutdownActorSystem(system);
   }
-  
+
   TestActorRef<BackendActor> backend;
   BackendActor actor;
 
   @Before
   public void setup() {
-    backend = TestActorRef.create(system, Props.create(BackendActor.class));
+    backend = TestActorRef.create(system, BackendActor.props("test"));
     actor = backend.underlyingActor();
   }
-  
+
   @Test
   public void testFrontendNotification() {
     new JavaTestKit(system) {{
 
      backend.tell(new FrontendAvailable(getTestActor()), getTestActor());
-     expectMsgClass(BackendRegistration.class);      
+     expectMsgClass(BackendRegistration.class);
     }};
   }
-  
+
 }

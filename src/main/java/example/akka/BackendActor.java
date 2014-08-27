@@ -7,14 +7,23 @@ import static example.akka.Messages.FrontendAvailable;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 
 public class BackendActor extends UntypedActor {
   final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-  final ActorSelection selection = context().actorSelection("akka.tcp://Remote@127.0.0.1:12345/user/RemoteActor");
+  final ActorSelection selection;
 
+
+  public static Props props(String remoteAddress) {
+    return Props.create(BackendActor.class, () -> new BackendActor(remoteAddress));
+  }
+
+  public BackendActor(String remoteAddress) {
+      selection = context().actorSelection(remoteAddress);
+  }
 
   @Override
   public void onReceive(Object message) {

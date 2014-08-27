@@ -14,13 +14,13 @@ import scala.concurrent.duration.FiniteDuration;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 
-
 public class ExampleApp implements Bootable {
+
   final Config config = ConfigFactory.load("example");
   final ActorSystem system = ActorSystem.create("example", config);
 
   /**
-    Create top-level actors depending on node role.
+   * Create top-level actors depending on node role.
    */
   @Override
   public void startup() {
@@ -42,7 +42,7 @@ public class ExampleApp implements Bootable {
   public void shutdown() {
     system.shutdown();
   }
-  
+
   private ActorRef startSeedNode() {
     return system.actorOf(Props.create(SeedActor.class));
   }
@@ -52,7 +52,11 @@ public class ExampleApp implements Bootable {
   }
 
   private void startBackendNode() {
-    ActorRef backend = system.actorOf(Props.create(BackendActor.class));
+    String remoteAddress = config.hasPath(
+        "remote-actor.address") ? config.getString("remote-actor.address")
+        : "akka.tcp://Remote@127.0.0.1:12345/user/RemoteActor";
+    System.out.println("Remote Actor Address: " + remoteAddress);
+    ActorRef backend = system.actorOf(BackendActor.props(remoteAddress));
     system.actorOf(Props.create(FrontendFinder.class, backend));
   }
 
@@ -61,7 +65,7 @@ public class ExampleApp implements Bootable {
     FiniteDuration interval = Duration.create(2, TimeUnit.SECONDS);
 
     system.scheduler()
-      .schedule(interval, interval, new WorkSimulator(frontend, ec), ec);
+        .schedule(interval, interval, new WorkSimulator(frontend, ec), ec);
   }
 
 }
