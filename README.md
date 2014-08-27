@@ -13,8 +13,12 @@
   - backend
      `mvn -q -P backend exec:java`
 
+###
+  - remote
+     `mvn -q -P remote exec:java`    
+
 ## Hosts and ports
-Default hostname is `localhost`, `seed1` use port 2551, `seed2` use port 2552,
+Default hostname is `localhost`, `seed1` use port 2551, `seed2` use port 2552, remote uses port 12345
 for frontend and backend nodes port is dynamically selected.
 
 Node host could be set with `HOST` environment variable, and you can use
