@@ -1,9 +1,10 @@
 package example.akka.persistence;
 
 import example.akka.persistence.forms.Form;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class FormStore {
+public class FormStore implements Serializable{
 
   ArrayList<Form> forms;
 

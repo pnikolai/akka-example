@@ -23,17 +23,17 @@ public class PersistenceActor extends AbstractPersistentActor {
   public PartialFunction<Object, BoxedUnit> receiveRecover() {
     return ReceiveBuilder.
         match(SnapshotOffer.class, ss -> {
-          System.out.println("Snapshot " + ss);
-          store = (FormStore) ss.snapshot();
-            })
+      System.out.println("Snapshot " + ss);
+      store = (FormStore) ss.snapshot();
+    })
         .match(FormCreated.class, e -> {
-          System.out.println("Add form event: " + e.getForm());
-          store.add(e.getForm());
-        })
+      System.out.println("Add form event: " + e.getForm());
+      store.add(e.getForm());
+    })
         .match(FormDeleted.class, e -> {
-          System.out.println("Remove form event: " + e.getId());
-          store.remove(e.getId());
-            })
+      System.out.println("Remove form event: " + e.getId());
+      store.remove(e.getId());
+    })
         .build();
   }
 
@@ -52,7 +52,7 @@ public class PersistenceActor extends AbstractPersistentActor {
       FormDeleted deleted = new FormDeleted(((DeleteForm) cmd).getId());
       persist(deleted, evt -> store.remove(evt.getId()));
     } else if (cmd instanceof Show) {
-      System.out.println(store);
+      System.out.println("Showing store: " + store);
     } else if (cmd instanceof ThrowException) {
       throw new RuntimeException("Excepted!");
     } else if (cmd instanceof MakeSnapshot) {
