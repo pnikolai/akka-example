@@ -196,32 +196,38 @@
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-testkit_2.11</artifactId>
-      <version>2.3.5</version>
+      <version>2.3.8</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-kernel_2.11</artifactId>
-      <version>2.3.5</version>
+      <version>2.3.8</version>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-cluster_2.11</artifactId>
-      <version>2.3.5</version>
+      <version>2.3.8</version>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-slf4j_2.11</artifactId>
-      <version>2.3.5</version>
+      <version>2.3.8</version>
     </dependency>
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-remote_2.11</artifactId>
-      <version>2.3.5</version>
+      <version>2.3.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-persistence-experimental_2.11</artifactId>
+      <version>2.3.8</version>
     </dependency>
 
     <dependency>
@@ -274,6 +280,13 @@
       <properties>
         <akka.app>RemoteApp</akka.app>
         <akka.cluster.port>12345</akka.cluster.port>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>persistence</id>
+      <properties>
+        <akka.app>PersistenceApp</akka.app>
       </properties>
     </profile>
 
